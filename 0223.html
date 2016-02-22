@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv='Content-type' content='text/html; charset=utf-8'>
+<title>Basic Example</title>
+<link rel="stylesheet" href="../shared/css/base.css" />
+<script src="../../build/react.js"></script>
+<script src="../../build/JSXTransformer.js"></script>
+</head>
+<body>
+<div id="box"></div>
+<script type="text/jsx">
+var Child = React.createClass({
+	getInitialState:function(){
+		return {
+			num : this.props.num
+		}
+	},
+	plus:function(){
+		this.setState({
+			num : ++this.state.num
+		});
+		this.props.callParent(this.state.num,this.props.index);
+	},
+	minus:function(){
+		this.setState({
+			num : --this.state.num
+		});
+		this.props.callParent(this.state.num,this.props.index);
+	},
+	render:function(){
+		return (
+			<div>
+				<input type="button" value="+" onClick={this.plus}/>
+				<input type="text" value={this.state.num}/>
+				<input type="button" value="-" onClick={this.minus}/>
+			</div>
+		)
+	}
+});
+
+var Parent = React.createClass({
+	getInitialState:function(){
+		return {
+			nums : [
+				{
+					"num":1
+				},
+				{
+					"num":2
+				},
+
+				{
+					"num":3
+				},
+			]
+		}
+	},
+	onChildchange:function(pnum,key){
+		var arr = this.state.nums;
+		arr[key].num = pnum;
+		this.setState({
+			nums : arr
+		});
+	},
+	render:function(){
+		var t = this;
+		return(
+			<div>
+				<p>|
+					{this.state.nums.map(function(item){
+						return(
+							<span>{item.num}<span>|</span></span>
+						)
+					})}
+				</p>
+			{this.state.nums.map(function(item,key){
+				return(
+					<Child num={item.num} index={key} callParent={t.onChildchange}/>
+				)
+			})}
+			</div>
+		)
+	}
+});
+
+React.render(<Parent />,document.getElementById("box"));
+</script>
+</body>
+</html>

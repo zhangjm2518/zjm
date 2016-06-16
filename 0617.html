@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>KISSY</title>
+<script src="http://g.alicdn.com/kissy/k/1.4.8/seed-min.js"></script>
+<style>
+*{margin:0;padding:0}
+li{list-style:none}
+.clear{display:block;clear:both;overflow:hidden;width:0;height:0}
+
+#main{width:1200px;background:#ddd;margin:20px auto;position:relative;padding:20px 0}
+
+#J_nav{width:220px;position:absolute;top:0; left:50%;line-height:36px;margin-left:380px;margin-top:20px}
+#J_nav ul{border-left:2px #999 solid}
+#J_nav ul li a{display:block;margin-left:10px}
+#J_nav ul li.cur a{color:#0f0}
+#J_nav.fix{position:fixed}
+
+#J_content{width:720px; float:left; margin-left:240px;background:#bbb}
+#J_content dl dt{height:50px;line-height:50px;border-bottom:1px #000 solid}
+#J_content dl dd{height:500px;background:#999;margin:30px}
+</style>
+</head>
+<body>
+<div id="main">
+	<div id="J_content">
+		<ul>
+			<li data-num="1">
+				<dl>
+					<dt>1111</dt>
+					<dd>1111</dd>
+				</dl>
+			</li>
+			<li>
+				<dl>
+					<dt>1111</dt>
+					<dd>1111</dd>
+				</dl>
+			</li>
+			<li>
+				<dl>
+					<dt>1111</dt>
+					<dd>1111</dd>
+				</dl>
+			</li>
+			<li>
+				<dl>
+					<dt>1111</dt>
+					<dd>1111</dd>
+				</dl>
+			</li>
+			<li>
+				<dl>
+					<dt>1111</dt>
+					<dd>1111</dd>
+				</dl>
+			</li>
+			<li>
+				<dl>
+					<dt>1111</dt>
+					<dd>1111</dd>
+				</dl>
+			</li>
+			<li>
+				<dl>
+					<dt>1111</dt>
+					<dd>1111</dd>
+				</dl>
+			</li>
+			<li>
+				<dl>
+					<dt>1111</dt>
+					<dd>1111</dd>
+				</dl>
+			</li>
+			<li>
+				<dl>
+					<dt>1111</dt>
+					<dd>1111</dd>
+				</dl>
+			</li>
+			<li>
+				<dl>
+					<dt>1111</dt>
+					<dd>1111</dd>
+				</dl>
+			</li>
+			<li>
+				<dl>
+					<dt>1111</dt>
+					<dd>1111</dd>
+				</dl>
+			</li>
+			<li data-num="2">
+				<dl>
+					<dt>2222</dt>
+					<dd style="height:100px">2222</dd>
+				</dl>
+			</li>
+			<li data-num="3">
+				<dl>
+					<dt>3333</dt>
+					<dd>3333</dd>
+				</dl>
+			</li>
+			<li>
+				<dl>
+					<dt>4444</dt>
+					<dd>4444</dd>
+				</dl>
+			</li>
+			<li>
+				<dl>
+					<dt>4444</dt>
+					<dd>4444</dd>
+				</dl>
+			</li>
+			<li data-num="5">
+				<dl>
+					<dt>5555</dt>
+					<dd>5555</dd>
+				</dl>
+			</li>
+			<li data-num="6">
+				<dl>
+					<dt>6666</dt>
+					<dd>6666</dd>
+				</dl>
+			</li>
+		</ul>
+	</div>
+	<div id="J_nav">
+		<ul>
+			<li class="cur"><a href="javascript:;" data-num="1">1</a></li>
+			<li><a href="javascript:;" data-num="2">2</a></li>
+			<li><a href="javascript:;" data-num="3">3</a></li>
+			<li><a href="javascript:;" data-num="5">5</a></li>
+			<li><a href="javascript:;" data-num="6">6</a></li>
+		</ul>
+	</div>
+	<div class="clear"></div>
+</div>
+<script>
+KISSY.config({
+	"combine":true
+})
+KISSY.use(["node","anim"],function(S, Node, Anim){
+	var navs = Node.all("#J_nav ul li a");
+	var cons = Node.all("#J_content ul li");
+	var win = Node.one(window);
+	var cur,curtop;
+	var mTop = Node.one("#main").offset().top;
+	
+	curtop = win.scrollTop();
+	checkfix(curtop);
+	checkCur(curtop);
+		
+	navs.on("click",function(){
+		cur = Node.one(this).attr("data-num");
+		for(var i=0, l = cons.length;i<l;i++){
+			if(cons.item(i).attr("data-num") == cur){
+				curtop = cons.item(i).offset().top;
+				Anim(win,{
+					"scrollTop":curtop
+				},.2).run();
+			}
+		}
+	})
+	
+	win.on("scroll",function(){
+		curtop = Node.one(this).scrollTop();
+		checkfix(curtop);
+		checkCur(curtop);
+	});
+	
+	function getItemHeight(obj){
+		var height =0 ;
+		height = obj.height();
+		if(obj.next() && !obj.next().attr("data-num")){
+			height = height + getItemHeight(obj.next());
+		}
+		return height;
+	}
+	
+	function checkfix(curtop){
+		if(curtop >= mTop){
+			Node.one("#J_nav").addClass("fix");
+		}else{
+			Node.one("#J_nav").removeClass("fix");
+		}
+	}
+	
+	function checkCur(curtop){
+		for(var i=0, l = cons.length;i<l;i++){
+			if(curtop >= cons.item(i).offset().top && curtop <= cons.item(i).offset().top+getItemHeight(cons.item(i))){
+				cur = parseInt(cons.item(i).attr("data-num"));
+				for(var j=0, l = navs.length; j<l; j++){
+					if(navs.item(j).attr("data-num") == cur){
+						navs.item(j).parent().addClass("cur").siblings().removeClass("cur");
+					}
+				}
+			}
+		}
+	}
+})
+</script>
+</body>
+</html>
